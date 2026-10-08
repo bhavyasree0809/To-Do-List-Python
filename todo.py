@@ -1,8 +1,9 @@
 tasks = []
 
+print("📝 TO-DO LIST")
+
 while True:
-    print("\n--- TO-DO LIST ---")
-    print("1. Add Task")
+    print("\n1. Add Task")
     print("2. View Tasks")
     print("3. Delete Task")
     print("4. Exit")
@@ -16,30 +17,26 @@ while True:
 
     elif choice == "2":
         if len(tasks) == 0:
-            print("No tasks available.")
+            print("No tasks yet.")
         else:
             print("\nYour Tasks:")
-            for i, task in enumerate(tasks, start=1):
+            for i, task in enumerate(tasks, 1):
                 print(i, ".", task)
 
     elif choice == "3":
         if len(tasks) == 0:
             print("No tasks to delete.")
         else:
-            for i, task in enumerate(tasks, start=1):
+            for i, task in enumerate(tasks, 1):
                 print(i, ".", task)
 
             number = int(input("Enter task number to delete: "))
-
-            if 1 <= number <= len(tasks):
-                removed = tasks.pop(number - 1)
-                print("Deleted:", removed)
-            else:
-                print("Invalid task number.")
+            tasks.pop(number - 1)
+            print("Task deleted!")
 
     elif choice == "4":
-        print("Thank you for using To-Do List!")
+        print("Goodbye!")
         break
 
     else:
-        print("Invalid choice. Try again.")
+        print("Invalid choice!")
