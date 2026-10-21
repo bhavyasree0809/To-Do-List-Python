@@ -1,5 +1,9 @@
+
+from datetime import datetime
+
 tasks = []
-print("TO-DO LIST PRO")
+
+print("===== TO-DO LIST PRO =====")
 
 while True:
     print("\n--- MENU ---")
@@ -9,133 +13,177 @@ while True:
     print("4. Search Tasks")
     print("5. Complete a Task")
     print("6. Exit")
-    
+
     choice = input("Enter your choice: ").strip()
-    
-    # 1. ADD TASK (With Priority and Due Date)
+
+    # 1. ADD TASK
     if choice == "1":
         title = input("Enter task name: ").strip()
+
         if not title:
             print("Error: Task name cannot be empty!")
             continue
-            
-        priority = input("Enter priority (High, Medium, Low) [Default: Medium]: ").strip().capitalize()
+
+        priority = input(
+            "Enter priority (High, Medium, Low) [Default: Medium]: "
+        ).strip().capitalize()
+
         if priority not in ["High", "Medium", "Low"]:
             priority = "Medium"
-            
-        due_date = input("Enter due date (YYYY-MM-DD) or press Enter to skip: ").strip()
+
+        due_date = input(
+            "Enter due date (YYYY-MM-DD) or press Enter to skip: "
+        ).strip()
+
         if due_date:
             try:
-                # Validate date format
                 datetime.strptime(due_date, "%Y-%m-%d")
             except ValueError:
-                print("Error: Invalid date format! Setting due date to 'None'.")
+                print("Invalid date! Due date set to None.")
                 due_date = "None"
         else:
             due_date = "None"
-            
+
         tasks.append({
             "title": title,
             "priority": priority,
             "due_date": due_date,
             "completed": False
         })
-        print("Success: Task added successfully!")
-        
-    # 2. VIEW AND FILTER TASKS
+
+        print("Task added successfully!")
+
+    # 2. VIEW / FILTER TASKS
     elif choice == "2":
         if not tasks:
             print("No tasks yet.")
             continue
-            
-        print("\nFilter Options:")
-        print("All | Pending | Completed")
-        filter_choice = input("Choose a filter [Default: All]: ").strip().capitalize()
-        
-        print(f"\n--- Your Tasks ({filter_choice if filter_choice in ['Pending', 'Completed'] else 'All'}) ---")
-        
+
+        print("\nFilter Options: All, Pending, Completed")
+        filter_choice = input(
+            "Choose filter [Default: All]: "
+        ).strip().capitalize()
+
+        if filter_choice not in ["All", "Pending", "Completed"]:
+            filter_choice = "All"
+
+        print("\n===== YOUR TASKS =====")
         displayed_count = 0
-        for i, t in enumerate(tasks, 1):
-            # Apply filters
-            if filter_choice == "Pending" and t["completed"]:
+
+        for i, task in enumerate(tasks, start=1):
+            if filter_choice == "Pending" and task["completed"]:
                 continue
-            if filter_choice == "Completed" and not t["completed"]:
+
+            if filter_choice == "Completed" and not task["completed"]:
                 continue
-                
-            status = "Completed" if t["completed"] else "Pending"
-            print(f"{i}. [{status}] {t['title']} | Priority: {t['priority']} | Due: {t['due_date']}")
+
+            status = "Completed" if task["completed"] else "Pending"
+
+            print(
+                f"{i}. [{status}] {task['title']} | "
+                f"Priority: {task['priority']} | "
+                f"Due: {task['due_date']}"
+            )
+
             displayed_count += 1
-            
+
         if displayed_count == 0:
             print("No tasks match this filter.")
-            
+
     # 3. DELETE TASK
     elif choice == "3":
         if not tasks:
-            print("Error: No tasks to delete.")
+            print("No tasks available to delete.")
             continue
-            
-        for i, t in enumerate(tasks, 1):
-            status = "Completed" if t["completed"] else "Pending"
-            print(f"{i}. {t['title']} ({status})")
-            
+
+        for i, task in enumerate(tasks, start=1):
+            status = "Completed" if task["completed"] else "Pending"
+            print(f"{i}. {task['title']} ({status})")
+
         try:
             number = int(input("Enter task number to delete: "))
+
             if 1 <= number <= len(tasks):
                 removed = tasks.pop(number - 1)
-                print(f"Task deleted: {removed['title']}")
+                print("Task deleted:", removed["title"])
             else:
-                print("Error: Invalid task number! Out of range.")
+                print("Invalid task number!")
+
         except ValueError:
-            print("Error: Invalid input! Please enter a valid number.")
-            
+            print("Please enter a valid number.")
+
     # 4. SEARCH TASKS
     elif choice == "4":
         if not tasks:
-            print("Error: No tasks available to search.")
+            print("No tasks available to search.")
             continue
-            
-        query = input("Enter keyword to search for: ").strip().lower()
-        print(f"\n--- Search Results for '{query}' ---")
-        
+
+        query = input("Enter keyword to search: ").strip().lower()
+
+        if not query:
+            print("Please enter a search keyword.")
+            continue
+
+        print("\n===== SEARCH RESULTS =====")
         found = False
-        for i, t in enumerate(tasks, 1):
-            if query in t["title"].lower():
-                status = "Completed" if t["completed"] else "Pending"
-                print(f"{i}. [{status}] {t['title']} | Priority: {t['priority']} | Due: {t['due_date']}")
+
+        for i, task in enumerate(tasks, start=1):
+            if query in task["title"].lower():
+                status = "Completed" if task["completed"] else "Pending"
+
+                print(
+                    f"{i}. [{status}] {task['title']} | "
+                    f"Priority: {task['priority']} | "
+                    f"Due: {task['due_date']}"
+                )
+
                 found = True
-                
+
         if not found:
             print("No matching tasks found.")
-            
+
     # 5. COMPLETE A TASK
     elif choice == "5":
-        pending_tasks = [t for t in tasks if not t["completed"]]
-        if not pending_tasks:
-            print("All tasks are already completed!")
+        pending = [
+            (i, task)
+            for i, task in enumerate(tasks, start=1)
+            if not task["completed"]
+        ]
+
+        if not pending:
+            print("No pending tasks available!")
             continue
-            
-        for i, t in enumerate(tasks, 1):
-            if not t["completed"]:
-                print(f"{i}. {t['title']} | Priority: {t['priority']}")
-                
+
+        print("\n===== PENDING TASKS =====")
+
+        for i, task in pending:
+            print(f"{i}. {task['title']} | Priority: {task['priority']}")
+
         try:
-            number = int(input("Enter task number to mark as completed: "))
+            number = int(
+                input("Enter task number to complete: ")
+            )
+
             if 1 <= number <= len(tasks):
                 if not tasks[number - 1]["completed"]:
                     tasks[number - 1]["completed"] = True
-                    print(f"Task status updated: {tasks[number - 1]['title']} is now Completed!")
+                    print(
+                        "Task completed:",
+                        tasks[number - 1]["title"]
+                    )
                 else:
-                    print("Notice: This task is already completed.")
+                    print("This task is already completed.")
             else:
-                print("Error: Invalid task number!")
+                print("Invalid task number!")
+
         except ValueError:
-            print("Error: Invalid input! Please enter a valid number.")
-            
+            print("Please enter a valid number.")
+
     # 6. EXIT
     elif choice == "6":
+        print("Thank you for using TO-DO LIST PRO!")
         print("Goodbye!")
         break
-        
+
     else:
-        print("Error: Invalid choice! Please select an option from 1 to 6.")
+        print("Invalid choice! Please select 1 to 6.")
